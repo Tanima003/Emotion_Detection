@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Live Emotion Detection</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f1f4f8;
+            color: #222;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 900px;
+            margin: 45px auto;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 30px;
+            border-radius: 18px 18px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            color: #d1d5db;
+            margin-bottom: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        video {
+            width: 100%;
+            max-width: 650px;
+            border-radius: 15px;
+            background: #111827;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 13px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #111827;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #374151;
+        }
+
+        .emotion {
+            margin-top: 25px;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .status {
+            margin-top: 10px;
+            color: #6b7280;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Live Emotion Detection</h1>
+
+        <p>
+            Real-time facial emotion recognition
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <video id="video" autoplay playsinline></video>
+
+        <br>
+
+        <button
+            class="button"
+            onclick="startCamera()"
+        >
+            Start Camera
+        </button>
+
+
+        <div class="emotion" id="emotion">
+
+            Camera Ready
+
+        </div>
+
+
+        <div class="status" id="status">
+
+            Click "Start Camera" to begin.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function startCamera() {
+
+    const video = document.getElementById("video");
+
+    const status = document.getElementById("status");
+
+    try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: true
+        });
+
+        video.srcObject = stream;
+
+        status.innerText =
+            "Camera started successfully.";
+
+    }
+
+    catch (error) {
+
+        status.innerText =
+            "Camera permission denied or unavailable.";
+
+        console.log(error);
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

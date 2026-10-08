@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Facial Emotion Detection</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f1f4f8;
+            color: #222;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 900px;
+            margin: 45px auto;
+        }
+
+        /* Header */
+
+        .header {
+            background: #111827;
+            color: rgb(244, 239, 239);
+            padding: 35px 25px;
+            border-radius: 18px 18px 0 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            margin: 10px 0 0;
+            color: #d1d5db;
+            font-size: 15px;
+        }
+
+        /* Main Card */
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        /* Upload */
+
+        .upload-section {
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .upload-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .button {
+            margin-top: 18px;
+            padding: 13px 30px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .button:hover {
+            background: #374151;
+            transform: translateY(-1px);
+        }
+
+        /* Camera Option */
+
+        .camera-option {
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .or-text {
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .camera-btn {
+            padding: 13px 28px;
+            background: white;
+            color: #111827;
+            border: 1px solid #111827;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .camera-btn:hover {
+            background: #111827;
+            color: white;
+        }
+
+        /* Camera Box */
+
+        .camera-box {
+            display: none;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .camera-box video {
+            width: 100%;
+            max-width: 600px;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 15px;
+            background: #111827;
+            border: 1px solid #e5e7eb;
+        }
+
+        .camera-buttons {
+            margin-top: 15px;
+        }
+
+        .capture-btn {
+            padding: 13px 24px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .capture-btn:hover {
+            background: #374151;
+        }
+
+        .close-btn {
+            padding: 13px 24px;
+            background: #e5e7eb;
+            color: #111827;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            background: #d1d5db;
+        }
+
+        .camera-status {
+            margin-top: 12px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Camera Result */
+
+        .camera-result {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .camera-result-heading {
+            text-align: center;
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .camera-detected-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .camera-detected-label {
+            color: #6b7280;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .camera-emotion {
+            font-size: 36px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #111827;
+        }
+
+        .camera-confidence {
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .camera-probability-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        /* Error */
+
+        .error {
+            margin-top: 20px;
+            padding: 14px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Result */
+
+        .result {
+            margin-top: 30px;
+        }
+
+        .result-heading {
+            text-align: center;
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Image Preview */
+
+        .image-preview-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .image-preview-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .preview-image {
+            width: 280px;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.10);
+        }
+
+        /* Detected Emotion */
+
+        .detected-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .detected-label {
+            color: #6b7280;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .emotion {
+            font-size: 36px;
+            font-weight: 700;
+            margin-top: 8px;
+            color: #111827;
+        }
+
+        /* Confidence */
+
+        .confidence {
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        /* Probability */
+
+        .probability-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .emotion-row {
+            margin-bottom: 18px;
+        }
+
+        .emotion-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+        }
+
+        .emotion-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .percentage {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .bar {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background: #111827;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        /* Footer */
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .emotion,
+            .camera-emotion {
+                font-size: 30px;
+            }
+
+            .preview-image {
+                width: 230px;
+            }
+
+            .capture-btn,
+            .close-btn {
+                margin-top: 8px;
+                margin-right: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+
+    <div class="header">
+
+        <h1>Facial Emotion Detection</h1>
+
+        <p>
+            AI-based facial expression recognition system
+        </p>
+
+    </div>
+
+
+    <!-- Main Card -->
+
+    <div class="card">
+
+
+        <!-- Upload Section -->
+
+        <div class="upload-section">
+
+            <div class="upload-title">
+                Upload a Face Image
+            </div>
+
+
+            <form
+                action="/predict"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    required
+                >
+
+                <br>
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Detect Emotion
+                </button>
+
+            </form>
+
+
+            <!-- Camera Option -->
+
+            <div class="camera-option">
+
+                <div class="or-text">
+                    OR
+                </div>
+
+                <button
+                    type="button"
+                    class="camera-btn"
+                    onclick="openCamera()"
+                >
+                    📷 Use Camera
+                </button>
+
+            </div>
+
+
+            <!-- Camera -->
+
+            <div
+                id="cameraBox"
+                class="camera-box"
+            >
+
+                <video
+                    id="cameraVideo"
+                    autoplay
+                    playsinline
+                ></video>
+
+
+                <div class="camera-buttons">
+
+                    <button
+                        type="button"
+                        class="capture-btn"
+                        onclick="capturePhoto()"
+                    >
+                        📸 Capture & Detect
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="close-btn"
+                        onclick="closeCamera()"
+                    >
+                        ✕ Close Camera
+                    </button>
+
+                </div>
+
+
+                <canvas
+                    id="cameraCanvas"
+                    style="display:none;"
+                ></canvas>
+
+
+                <div
+                    id="cameraStatus"
+                    class="camera-status"
+                >
+                    Camera is ready.
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- Error -->
+
+        {% if error %}
+
+        <div class="error">
+
+            {{ error }}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- Camera Result -->
+
+        <div
+            id="cameraResult"
+            class="camera-result"
+        >
+
+            <div class="camera-result-heading">
+                Camera Prediction Result
+            </div>
+
+
+            <div class="camera-detected-box">
+
+                <div class="camera-detected-label">
+                    Detected Emotion
+                </div>
+
+
+                <div
+                    id="cameraEmotion"
+                    class="camera-emotion"
+                >
+                    -
+                </div>
+
+
+                <div
+                    id="cameraConfidence"
+                    class="camera-confidence"
+                >
+                    Confidence: -
+                </div>
+
+            </div>
+
+
+            <div class="camera-probability-title">
+                Emotion Probabilities
+            </div>
+
+
+            <div id="cameraProbabilities"></div>
+
+        </div>
+
+
+        <!-- Uploaded Image Result -->
+
+        {% if emotion %}
+
+        <div class="result">
+
+
+            <div class="result-heading">
+
+                Prediction Result
+
+            </div>
+
+
+            <!-- Uploaded Image -->
+
+            {% if image_path %}
+
+            <div class="image-preview-section">
+
+                <h3>
+                    Uploaded Image
+                </h3>
+
+                <img
+                    src="{{ url_for('static', filename='uploaded_image.jpg') }}"
+                    class="preview-image"
+                    alt="Uploaded Face"
+                >
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- Detected Emotion -->
+
+            <div class="detected-box">
+
+                <div class="detected-label">
+
+                    Detected Emotion
+
+                </div>
+
+
+                <div class="emotion">
+
+                    {{ emotion }}
+
+                </div>
+
+
+                <!-- Confidence -->
+
+                {% if confidence %}
+
+                <div class="confidence">
+
+                    Confidence: {{ confidence }}%
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Probability -->
+
+            <div class="probability-title">
+
+                Emotion Probabilities
+
+            </div>
+
+
+            {% for name, percentage in percentages.items() %}
+
+            <div class="emotion-row">
+
+                <div class="emotion-info">
+
+                    <span class="emotion-name">
+
+                        {{ name }}
+
+                    </span>
+
+
+                    <span class="percentage">
+
+                        {{ percentage }}%
+
+                    </span>
+
+                </div>
+
+
+                <div class="bar">
+
+                    <div
+                        class="fill"
+                        style="width: {{ percentage }}%;"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- Footer -->
+
+    <div class="footer">
+
+        Facial Emotion Recognition • Deep Learning Project
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+let cameraStream = null;
+
+
+/* Open Camera */
+
+async function openCamera() {
+
+    const cameraBox =
+        document.getElementById("cameraBox");
+
+    const video =
+        document.getElementById("cameraVideo");
+
+    const status =
+        document.getElementById("cameraStatus");
+
+    cameraBox.style.display = "block";
+
+    status.innerText =
+        "Starting camera...";
+
+
+    try {
+
+        cameraStream =
+            await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "user"
+                },
+                audio: false
+            });
+
+
+        video.srcObject =
+            cameraStream;
+
+
+        status.innerText =
+            "Camera started. Keep your face clearly visible.";
+
+    }
+
+    catch (error) {
+
+        status.innerText =
+            "Camera permission denied or camera unavailable.";
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* Close Camera */
+
+function closeCamera() {
+
+    const cameraBox =
+        document.getElementById("cameraBox");
+
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                track => track.stop()
+            );
+
+        cameraStream = null;
+
+    }
+
+
+    cameraBox.style.display =
+        "none";
+
+}
+
+
+/* Capture Photo */
+
+async function capturePhoto() {
+
+    const video =
+        document.getElementById("cameraVideo");
+
+    const canvas =
+        document.getElementById("cameraCanvas");
+
+    const status =
+        document.getElementById("cameraStatus");
+
+    const resultBox =
+        document.getElementById("cameraResult");
+
+
+    if (!video.videoWidth) {
+
+        status.innerText =
+            "Camera is not ready yet.";
+
+        return;
+
+    }
+
+
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const context =
+        canvas.getContext("2d");
+
+
+    context.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    const imageData =
+        canvas.toDataURL("image/jpeg", 0.9);
+
+
+    status.innerText =
+        "Detecting emotion...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/predict_camera",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        image: imageData
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.error) {
+
+            status.innerText =
+                result.error;
+
+            resultBox.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        /* Show Result */
+
+        resultBox.style.display =
+            "block";
+
+
+        document.getElementById(
+            "cameraEmotion"
+        ).innerText =
+            result.emotion;
+
+
+        document.getElementById(
+            "cameraConfidence"
+        ).innerText =
+            "Confidence: " +
+            result.confidence +
+            "%";
+
+
+        /* Show Probabilities */
+
+        const probabilityContainer =
+            document.getElementById(
+                "cameraProbabilities"
+            );
+
+
+        probabilityContainer.innerHTML =
+            "";
+
+
+        for (
+            const [name, percentage]
+            of Object.entries(result.percentages)
+        ) {
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "emotion-row";
+
+
+            row.innerHTML = `
+
+                <div class="emotion-info">
+
+                    <span class="emotion-name">
+                        ${name}
+                    </span>
+
+                    <span class="percentage">
+                        ${percentage}%
+                    </span>
+
+                </div>
+
+                <div class="bar">
+
+                    <div
+                        class="fill"
+                        style="width: ${percentage}%"
+                    ></div>
+
+                </div>
+
+            `;
+
+
+            probabilityContainer.appendChild(row);
+
+        }
+
+
+        status.innerText =
+            "Emotion detected successfully.";
+
+
+        /* Scroll to result */
+
+        resultBox.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    catch (error) {
+
+        status.innerText =
+            "Error while detecting emotion.";
+
+        console.log(error);
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
